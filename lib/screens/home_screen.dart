@@ -7,18 +7,8 @@ import '../widgets/speed_dial_grid.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  static const _moods = [
-    'Energize',
-    'Feel good',
-    'Workout',
-    'Relax',
-    'Party',
-    'Romance',
-  ];
-
   @override
   Widget build(BuildContext context) {
-    print("heyyyyyyyyyyyyyyyyyyy");
     final music = context.watch<MusicProvider>();
 
     return DecoratedBox(
@@ -36,6 +26,7 @@ class HomeScreen extends StatelessWidget {
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
+              // Top app header
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(20, 14, 20, 8),
                 sliver: SliverToBoxAdapter(
@@ -54,7 +45,9 @@ class HomeScreen extends StatelessWidget {
                           color: Colors.white,
                         ),
                       ),
+
                       const SizedBox(width: 8),
+
                       const Text(
                         'Music',
                         style: TextStyle(
@@ -63,16 +56,10 @@ class HomeScreen extends StatelessWidget {
                           letterSpacing: -1,
                         ),
                       ),
+
                       const Spacer(),
-                      IconButton(
-                        tooltip: 'Notifications',
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.notifications_none_rounded,
-                          size: 31,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
+
+                      // Account icon
                       const CircleAvatar(
                         radius: 20,
                         backgroundColor: Color(0xFFEEEEEE),
@@ -85,40 +72,10 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              SliverToBoxAdapter(
-                child: SizedBox(
-                  height: 56,
-                  child: ListView.separated(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 7,
-                    ),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _moods.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 8),
-                    itemBuilder: (context, index) {
-                      final mood = _moods[index];
-                      final selected = music.selectedMood == mood;
-                      return ChoiceChip(
-                        selected: selected,
-                        label: Text(mood),
-                        onSelected: (_) => music.selectMood(mood),
-                        showCheckmark: false,
-                        side: BorderSide.none,
-                        backgroundColor: const Color(0xFF4A4646),
-                        selectedColor: const Color(0xFF6A6666),
-                        labelStyle: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
+
+              // Offline local music information
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
                 sliver: SliverToBoxAdapter(
                   child: Container(
                     padding: const EdgeInsets.all(18),
@@ -141,7 +98,9 @@ class HomeScreen extends StatelessWidget {
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),
+
                               SizedBox(height: 5),
+
                               Text(
                                 'Everything here comes from audio stored on this device.',
                                 style: TextStyle(
@@ -152,18 +111,21 @@ class HomeScreen extends StatelessWidget {
                             ],
                           ),
                         ),
+
                         CircleAvatar(
                           radius: 25,
                           backgroundColor: Colors.white12,
-                          child: Icon(Icons.arrow_forward_rounded, size: 30),
+                          child: Icon(Icons.music_note_rounded, size: 30),
                         ),
                       ],
                     ),
                   ),
                 ),
               ),
+
+              // Speed Dial header
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20, 14, 20, 8),
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 8),
                 sliver: SliverToBoxAdapter(
                   child: Row(
                     children: [
@@ -175,7 +137,9 @@ class HomeScreen extends StatelessWidget {
                           color: Colors.black,
                         ),
                       ),
+
                       const SizedBox(width: 14),
+
                       const Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,7 +152,9 @@ class HomeScreen extends StatelessWidget {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
+
                             SizedBox(height: 2),
+
                             Text(
                               'Speed dial',
                               style: TextStyle(
@@ -199,6 +165,7 @@ class HomeScreen extends StatelessWidget {
                           ],
                         ),
                       ),
+
                       if (!music.isLoading)
                         IconButton(
                           tooltip: 'Refresh local music',
@@ -209,11 +176,14 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
+
+              // Loading state
               if (music.isLoading)
                 const SliverFillRemaining(
                   hasScrollBody: false,
                   child: Center(child: CircularProgressIndicator()),
                 )
+              // Permission state
               else if (music.permissionDenied)
                 SliverFillRemaining(
                   hasScrollBody: false,
@@ -226,6 +196,7 @@ class HomeScreen extends StatelessWidget {
                     onAction: music.refreshLibrary,
                   ),
                 )
+              // Error state
               else if (music.errorMessage != null)
                 SliverFillRemaining(
                   hasScrollBody: false,
@@ -237,6 +208,7 @@ class HomeScreen extends StatelessWidget {
                     onAction: music.refreshLibrary,
                   ),
                 )
+              // Local songs
               else
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
@@ -275,19 +247,25 @@ class _MessageState extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, size: 64, color: Colors.white54),
+
           const SizedBox(height: 18),
+
           Text(
             title,
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
           ),
+
           const SizedBox(height: 8),
+
           Text(
             message,
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.white60, height: 1.4),
           ),
+
           const SizedBox(height: 18),
+
           FilledButton(onPressed: onAction, child: Text(actionLabel)),
         ],
       ),
