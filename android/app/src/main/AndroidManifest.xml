@@ -24,7 +24,7 @@
         android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
     <application
-        android:label="Music"
+        android:label="Vibe Sync"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 

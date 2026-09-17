@@ -1,6 +1,9 @@
 name: vibe_sync
+
 description: "A local-only YouTube Music inspired Flutter music player."
+
 publish_to: 'none'
+
 version: 1.0.0+1
 
 environment:
@@ -9,6 +12,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
   cupertino_icons: ^1.0.9
   provider: ^6.1.5+1
   just_audio: ^0.10.6
@@ -19,7 +23,18 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/images/loge.png
+    
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/loge.png"
+  min_sdk_android: 21

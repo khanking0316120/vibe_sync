@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 
@@ -11,11 +10,9 @@ class MusicProvider extends ChangeNotifier {
   MusicProvider({
     required AppAudioHandler audioHandler,
     required MusicLibraryService libraryService,
-  })  : _audioHandler = audioHandler,
-        _libraryService = libraryService {
-    _subscriptions.add(
-      _audioHandler.mediaItem.listen(_handleMediaItem),
-    );
+  }) : _audioHandler = audioHandler,
+       _libraryService = libraryService {
+    _subscriptions.add(_audioHandler.mediaItem.listen(_handleMediaItem));
     _subscriptions.add(
       _audioHandler.playbackState.listen(_handlePlaybackState),
     );
@@ -65,15 +62,16 @@ class MusicProvider extends ChangeNotifier {
   List<LocalSong> get searchResults {
     final query = _searchQuery.trim().toLowerCase();
     if (query.isEmpty) return _songs;
-    return _songs.where((song) {
-      return song.title.toLowerCase().contains(query) ||
-          song.artist.toLowerCase().contains(query) ||
-          song.album.toLowerCase().contains(query);
-    }).toList(growable: false);
+    return _songs
+        .where((song) {
+          return song.title.toLowerCase().contains(query) ||
+              song.artist.toLowerCase().contains(query) ||
+              song.album.toLowerCase().contains(query);
+        })
+        .toList(growable: false);
   }
 
-  List<LocalSong> get speedDialSongs =>
-      _songs.take(9).toList(growable: false);
+  List<LocalSong> get speedDialSongs => _songs.take(9).toList(growable: false);
 
   List<LocalSong> get savedSongs => _songs
       .where((song) => _savedSongIds.contains(song.id))
@@ -204,9 +202,7 @@ class MusicProvider extends ChangeNotifier {
       album: song.album,
       duration: song.duration,
       artUri: song.artworkUri,
-      extras: {
-        'localSongId': song.id,
-      },
+      extras: {'localSongId': song.id},
     );
   }
 
@@ -222,7 +218,8 @@ class MusicProvider extends ChangeNotifier {
 
   void _handlePlaybackState(PlaybackState state) {
     _isPlaying = state.playing;
-    _isBuffering = state.processingState == AudioProcessingState.loading ||
+    _isBuffering =
+        state.processingState == AudioProcessingState.loading ||
         state.processingState == AudioProcessingState.buffering;
     _shuffleEnabled = state.shuffleMode != AudioServiceShuffleMode.none;
     _repeatMode = state.repeatMode;

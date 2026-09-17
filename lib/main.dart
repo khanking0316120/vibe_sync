@@ -6,15 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/music_provider.dart';
-import 'screens/app_shell.dart';
+import 'screens/splash_screen.dart';
 import 'services/app_audio_handler.dart';
 import 'services/music_library_service.dart';
 import 'utils/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  debugPrint('========== STEP 1: MAIN STARTED ==========');
 
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.presentError(details);
@@ -28,43 +26,36 @@ Future<void> main() async {
     debugPrint('========== PLATFORM ERROR ==========');
     debugPrint(error.toString());
     debugPrintStack(stackTrace: stack);
+
     return true;
   };
 
   try {
-    debugPrint('========== STEP 2: BEFORE AUDIO SERVICE INIT ==========');
+    debugPrint('========== APP STARTING ==========');
 
     final AppAudioHandler audioHandler =
         await AudioService.init<AppAudioHandler>(
-          builder: () {
-            debugPrint('========== STEP 2A: CREATING AUDIO HANDLER ==========');
-
-            return AppAudioHandler();
-          },
+          builder: () => AppAudioHandler(),
           config: const AudioServiceConfig(
             androidNotificationChannelId: 'com.example.vibe_sync.audio',
-
             androidNotificationChannelName: 'Music playback',
-
             androidNotificationChannelDescription:
                 'Local music playback controls',
-
             androidNotificationOngoing: false,
-
             androidStopForegroundOnPause: false,
           ),
         ).timeout(
           const Duration(seconds: 15),
           onTimeout: () {
-            throw TimeoutException('AudioService.init() timed out.');
+            throw TimeoutException('AudioService initialization timed out.');
           },
         );
 
-    debugPrint('========== STEP 3: AUDIO SERVICE INITIALIZED ==========');
+    debugPrint('========== AUDIO SERVICE READY ==========');
 
     await audioHandler.configureAudioSession();
 
-    debugPrint('========== STEP 4: AUDIO SESSION READY ==========');
+    debugPrint('========== AUDIO SESSION READY ==========');
 
     runApp(
       ChangeNotifierProvider(
@@ -82,15 +73,9 @@ Future<void> main() async {
         child: const VibeSyncApp(),
       ),
     );
-
-    debugPrint('========== STEP 5: RUN APP CALLED ==========');
   } catch (error, stackTrace) {
-    debugPrint('');
-    debugPrint('========================================');
-    debugPrint('APP STARTUP FAILED');
-    debugPrint('ERROR: $error');
-    debugPrint('========================================');
-
+    debugPrint('========== APP STARTUP FAILED ==========');
+    debugPrint('Error: $error');
     debugPrintStack(stackTrace: stackTrace);
 
     runApp(StartupErrorApp(error: error.toString()));
@@ -102,13 +87,13 @@ class VibeSyncApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('========== VibeSyncApp BUILD CALLED ==========');
-
     return MaterialApp(
-      title: 'Music',
+      title: 'VibeSync',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
-      home: const AppShell(),
+
+      // App starts from the animated splash screen.
+      home: const SplashScreen(),
     );
   }
 }
@@ -121,6 +106,7 @@ class StartupErrorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'VibeSync',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
       home: Scaffold(
@@ -134,24 +120,28 @@ class StartupErrorApp extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(
-                      Icons.error_outline,
+                      Icons.error_outline_rounded,
                       color: Colors.redAccent,
                       size: 70,
                     ),
-
                     const SizedBox(height: 20),
-
                     const Text(
                       'App startup failed',
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
                     const SizedBox(height: 16),
-
-                    SelectableText(error, textAlign: TextAlign.center),
+                    SelectableText(
+                      error,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                      ),
+                    ),
                   ],
                 ),
               ),
